@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [ -e "/var/log/zabbix/zabbix_server.log" ]; then
-FILE="/var/log/zabbix/zabbix_server.log"
+LOG="/var/log/zabbix/zabbix_server.log"
 else
-FILE=$1
+LOG=$1
 fi
 
 if [ -z "$2" ]; then
@@ -59,3 +59,11 @@ grep "slow query.*delete from events" "$LOG" > "$OUT/slow.query.delete.from.even
 grep -Eo "slow query: [0-9][0-9]+\.[0-9]+ sec" "$LOG" > "$OUT/slow.query.more.than.10.seconds.log"
 grep -Eo "slow query: [0-9][0-9][0-9]+\.[0-9]+ sec" "$LOG" > "$OUT/slow.query.more.than.100.seconds.log"
 
+# remove all empty files in working directory
+if [ -d "$OUT" ]; then
+    # Find and remove all files with size 0
+    find "$OUT" -type f -size 0 -exec rm -f {} +
+    echo "All 0-byte files in '$OUT' have been removed."
+else
+    echo "Directory '$OUT' does not exist."
+fi
